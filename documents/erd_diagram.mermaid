@@ -1,0 +1,50 @@
+erDiagram
+    USER {
+        int id PK
+        string username
+        string email
+        string password
+    }
+    VIDEO {
+        int id PK
+        string title
+        string description
+        string duration
+        string video_url
+    }
+    SUBSCRIPTION {
+        int id PK
+        string type
+        date start_date
+        date end_date
+        int user_id FK
+        int payment_id FK
+    }
+    PAYMENT {
+        int id PK
+        decimal amount
+        date payment_date
+        int user_id FK
+        int subscription_id FK
+    }
+    HISTORY {
+        int id PK
+        date watch_date
+        duration duration
+        int user_id FK
+        int video_id FK
+    }
+    VIDEO_SUBSCRIPTION {
+        int id PK
+        int video_id FK
+        int subscription_id FK
+        string quality
+    }
+
+    USER ||--o| SUBSCRIPTION: has
+    USER ||--o| PAYMENT: makes
+    USER ||--o| HISTORY: watches
+    VIDEO ||--o| HISTORY: is_watched
+    VIDEO ||--o| VIDEO_SUBSCRIPTION: is_available_in
+    SUBSCRIPTION ||--o| VIDEO_SUBSCRIPTION: grants_access_to
+    SUBSCRIPTION ||--o| PAYMENT: is_paid_by
