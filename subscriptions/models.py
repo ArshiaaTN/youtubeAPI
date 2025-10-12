@@ -1,6 +1,5 @@
 from django.db import models
 from accounts.models import User
-from payments.models import Payment
 
 
 class Subscription(models.Model):
@@ -14,11 +13,24 @@ class Subscription(models.Model):
         (VIP, 'VIP'),
     ]
 
+    SUBSCRIPTION_PRICES = {
+        BASIC: 10,
+        PREMIUM: 25,
+        VIP: 50,
+    }
+
     type = models.CharField(max_length=50, choices=SUBSCRIPTION_CHOICES, default=BASIC)
     start_date = models.DateField()
     end_date = models.DateField()
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='subscriptions')
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.type} Subscription for {self.user.username}"
+        return f"{self.type} Subscription for {self.user.username} ({'Active' if self.is_active else 'Inactive'})"
+
+    def get_price(self):
+        return self.SUBSCRIPTION_PRICES.get(self.type, 0)
+
+    class Meta:
+        ordering = ['-start_date']
